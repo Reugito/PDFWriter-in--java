@@ -1,0 +1,45 @@
+	
+	@GetMapping("testpdf")
+	public ResponseEntity<byte[]> pdfGenerator(HttpServletResponse response) {
+		logger.info("Iam here------------------------");
+		try {
+			PdfReader reader = new PdfReader("test.pdf ");
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			PdfStamper stamper = new PdfStamper(reader, baos);
+			AcroFields form = stamper.getAcroFields();
+			form.setField("aadhaarName", "***");
+			form.setField("dob", "*************");
+			form.setField("gender", "************");
+			form.setField("aadhaarNo", "************");
+			form.setField("address", "****************");
+			
+			byte[] aadharDecoded = Base64.decodeBase64("Image Bytes");
+			Image image1 = Image.getInstance(aadharDecoded);
+			List<FieldPosition> position = form.getFieldPositions("aadhaarImg");
+			
+			Rectangle rect= position.get(0).position;
+			image1.scaleToFit(rect.getWidth(), rect.getHeight());
+			image1.setBorder(2);
+			image1.setAbsolutePosition(
+					position.get(0).position.getLeft() + (rect.getWidth() - image1.getScaledWidth() )
+		    , position.get(0).position.getTop() - (rect.getHeight()));
+		    PdfContentByte cb = stamper.getOverContent((int)position.get(0).page);
+		    cb.addImage(image1);
+	        
+			stamper.setFormFlattening(true);
+			stamper.close();
+			
+			byte[] byteARy = baos.toByteArray();
+			
+			HttpHeaders headers = new HttpHeaders();
+		    headers.setContentType(MediaType.APPLICATION_PDF);
+			ResponseEntity<byte[]> response1 = new ResponseEntity<>(byteARy, headers, HttpStatus.OK);
+			
+		    return response1;
+		} catch (Exception e) {
+			logger.info("Error is here"+e.getMessage());
+		}
+		
+		return null;
+	}
+  
