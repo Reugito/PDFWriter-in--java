@@ -23,7 +23,8 @@
 			image1.setAbsolutePosition(
 					position.get(0).position.getLeft() + (rect.getWidth() - image1.getScaledWidth() )
 		    , position.get(0).position.getTop() - (rect.getHeight()));
-		    PdfContentByte cb = stamper.getOverContent((int)position.get(0).page);
+		    //PdfContentByte overContent = stamper.getOverContent(4); ------------------- This two lines are discribing the page number on
+		    PdfContentByte cb = stamper.getOverContent((int)position.get(0).page); ------ which data is getting written
 		    cb.addImage(image1);
 	        
 			stamper.setFormFlattening(true);
